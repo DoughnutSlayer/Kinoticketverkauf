@@ -3,17 +3,27 @@ package de.uni_hamburg.informatik.swt.se2.kino.fachwerte;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+/**
+ * Ein Geldbetrag steht für eine bestimmte Geldsumme.
+ * Man kann sich dessen Wert als String in einem geeigneten Format ausgeben lassen.
+ * Man kann Geldwerte entweder mit einem Integer bzw. int-Wert auswählen, sowie mit einem geeignet formatierten String.
+ * 
+ * @author TMNT
+ * @version 05.07.2016
+ */
 public class Geldbetrag
 {
     private static final Pattern _eingabePattern = Pattern
-        .compile("\\d++(,|\\.)?+(\\d{1,2}+)?+"); // Das Pattern zu der regular expressions für Eingaben.
+        .compile("(\\d++(,|\\.)|\\d++|(,|\\.))(\\d{1,2}+)?+"); // Das Pattern zu der regular expressions für Eingaben.
     private static final Pattern _natuerlicheZahlPattern = Pattern
         .compile("\\d++"); // Ein Pattern das alle natürlichen Zahlen zulässt.
 
-    private static HashMap<Integer, Geldbetrag> _alleGeldbetraege; // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
+    private static HashMap<Integer, Geldbetrag> _alleGeldbetraege = new HashMap<>(); // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
 
     private final int _gesamterCentbetrag; // Der gesamte Betrag dieses Geldbetrags in Cent.
+
     private final String _betragString; // Eine String repräsentation des Geldbetrags in der Form "EE,CC".
+    private final int _maximalerErlaubterFaktor; // Der größte Faktor mit dem dieser Geldbetrag multipliziert werden darf.
 
     /**
      * Initialisiert einen neuen Geldbetrag. Es darf noch keinen anderen Geldbetrag mit dem gleichen gesamten Centbetrag geben.
@@ -33,6 +43,7 @@ public class Geldbetrag
 
         _gesamterCentbetrag = gesamterCentbetrag;
         _betragString = erstelleBetragString();
+        _maximalerErlaubterFaktor = Integer.MAX_VALUE / _gesamterCentbetrag;
     }
 
     /**
@@ -126,11 +137,15 @@ public class Geldbetrag
     }
 
     /**
-     * @param faktor Eine ganzzahlige, positive Zahl.
+     * @param faktor Eine ganzzahlige, positive Zahl. Der Faktor darf nicht so groß sein, dass der Wert des Ergebnisses größer ist, als Integer.MAX_VALUE.
      * @return Ein Geldbetrag, dessen Wert dem Produkt von diesem Geldwert mit dem Faktor entspricht.
+     * 
+     * @require istErlaubterFaktor(faktor)
      */
     public Geldbetrag mal(int faktor)
     {
+        assert istErlaubterFaktor(
+                faktor) : "Vorbedingung verletzt: istErlaubterFaktor(faktor)";
         return select(_gesamterCentbetrag * faktor);
     }
 
@@ -140,7 +155,7 @@ public class Geldbetrag
      * 
      * @require anderer != null
      */
-    public boolean groeßerAls(Geldbetrag anderer)
+    public boolean groesserAls(Geldbetrag anderer)
     {
         assert anderer != null : "Vorbedingung verletzt: anderer != null";
         return _gesamterCentbetrag > anderer._gesamterCentbetrag;
@@ -152,7 +167,7 @@ public class Geldbetrag
      * 
      * @require istErlaubterGesamterCentbetrag(centbetrag)
      */
-    public boolean groeßerAls(int centbetrag)
+    public boolean groesserAls(int centbetrag)
     {
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
@@ -285,5 +300,10 @@ public class Geldbetrag
         }
 
         return euro + "," + cent;
+    }
+
+    private boolean istErlaubterFaktor(int faktor)
+    {
+        return faktor >= 0 && faktor <= _maximalerErlaubterFaktor;
     }
 }
