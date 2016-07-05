@@ -163,6 +163,18 @@ public class Geldbetrag
     }
 
     /**
+     * @param anderer Der Geldbetrag mit dem dieser Geldbetrag Verglichen werden soll.
+     * @return Ob dieser Geldbetrag größer oder gleich dem anderen Geldbetrag ist.
+     * 
+     * @require anderer != null
+     */
+    public boolean groesserGleich(Geldbetrag anderer)
+    {
+        assert anderer != null : "Vorbedingung verletzt: anderer != null";
+        return _gesamterCentbetrag >= anderer._gesamterCentbetrag;
+    }
+
+    /**
      * @param anderer Der Centbetrag mit dem Verglichen werden soll.
      * @return Ob dieser Geldbetrag größer ist, als der übergebene Centbetrag.
      * 
@@ -173,6 +185,19 @@ public class Geldbetrag
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
         return _gesamterCentbetrag > centbetrag;
+    }
+
+    /**
+     * @param anderer Der Centbetrag mit dem Verglichen werden soll.
+     * @return Ob dieser Geldbetrag größer oder gleich dem übergebenen Centbetrag ist.
+     * 
+     * @require istErlaubterGesamterCentbetrag(centbetrag)
+     */
+    public boolean groesserGleich(int centbetrag)
+    {
+        assert istErlaubterGesamterCentbetrag(
+                centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
+        return _gesamterCentbetrag >= centbetrag;
     }
 
     /**
