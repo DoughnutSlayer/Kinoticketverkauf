@@ -3,6 +3,14 @@ package de.uni_hamburg.informatik.swt.se2.kino.fachwerte;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+/**
+ * Ein Geldbetrag steht für eine bestimmte Geldsumme.
+ * Man kann sich dessen Wert als String in einem geeigneten Format ausgeben lassen.
+ * Man kann Geldwerte entweder mit einem Integer bzw. int-Wert auswählen, sowie mit einem geeignet formatierten String.
+ * 
+ * @author TMNT
+ * @version 05.07.2016
+ */
 public class Geldbetrag
 {
     private static final Pattern _eingabePattern = Pattern

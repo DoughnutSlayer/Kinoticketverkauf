@@ -4,14 +4,20 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * Testklasse für Geldbetrag.
+ * 
+ * @author TMNT
+ * @version 05.07.2015
+ */
 public class GeldbetragTest
 {
-    private Geldbetrag _dreißigCentInt = Geldbetrag.select(30);
+    private Geldbetrag _dreißigCentInt = Geldbetrag.select(30); // Ein Geldbetrag vom Wert 0,30€, der mit einem int ausgewählt wurde.
     private Geldbetrag _fünfEuroFünfundzwanzigString = Geldbetrag
-        .select("5,25");
+        .select("5,25"); // Ein Geldbetrag vom Wert 5,25€, der mit einem String ausgewählt wurde.
 
-    private Geldbetrag _zehnEuroInt = Geldbetrag.select(1000);
-    private Geldbetrag _zehnEuroString = Geldbetrag.select("10,00");
+    private Geldbetrag _zehnEuroInt = Geldbetrag.select(1000); // Ein Geldbetrag vom Wert 10,00€, der mit einem int ausgewählt wurde.
+    private Geldbetrag _zehnEuroString = Geldbetrag.select("10,00"); // Ein Geldbetrag vom Wert 10,00€, der mit einem String ausgewählt wurde.
 
     /**
      * Testet, dass zwei seperat erstellte Geldbeträge mit dem gleichen Wert als gleich angesehen werden.
