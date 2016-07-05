@@ -83,6 +83,7 @@ public class Geldbetrag
      */
     public static boolean istErlaubterString(String eingabe)
     {
+        eingabe = eingabe.trim();
         return _eingabePattern.matcher(eingabe)
             .matches();
     }
