@@ -147,7 +147,7 @@ public class BezahlWerkzeug
     {
         assert gegeben != null : "Vorbedingung verletzt: gegeben != null";
 
-        boolean genugGegeben = !_preis.groesserAls(gegeben);
+        boolean genugGegeben = gegeben.groesserGleich(_preis);
         Label rueckgeldLabel = _ui.getRueckgeldLabel();
         Label rueckgeldFeld = _ui.getRueckgeldFeld();
 
