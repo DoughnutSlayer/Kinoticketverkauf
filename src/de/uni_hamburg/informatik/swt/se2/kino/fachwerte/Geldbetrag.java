@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
- * Ein Geldbetrag steht für eine bestimmte Geldsumme.
+ * Ein Geldbetrag steht für eine bestimmte Geldsumme, er kann nicht negativ sein.
  * Man kann sich dessen Wert als String in einem geeigneten Format ausgeben lassen.
  * Man kann Geldwerte entweder mit einem Integer bzw. int-Wert auswählen, sowie mit einem geeignet formatierten String.
  * 
