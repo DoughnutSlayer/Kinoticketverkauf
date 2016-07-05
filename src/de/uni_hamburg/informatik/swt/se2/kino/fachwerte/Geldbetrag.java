@@ -79,6 +79,12 @@ public class Geldbetrag
         Geldbetrag anderer = (Geldbetrag) obj;
         return anderer == this;
     }
+    
+    @Override
+    public int hashCode()
+    {
+        return ("" + _gesamterCentbetrag).hashCode();
+    }
 
     public Geldbetrag plus(Geldbetrag summand)
     {
