@@ -3,17 +3,27 @@ package de.uni_hamburg.informatik.swt.se2.kino.fachwerte;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
+/**
+ * Ein Geldbetrag steht für eine bestimmte Geldsumme.
+ * Man kann sich dessen Wert als String in einem geeigneten Format ausgeben lassen.
+ * Man kann Geldwerte entweder mit einem Integer bzw. int-Wert auswählen, sowie mit einem geeignet formatierten String.
+ * 
+ * @author TMNT
+ * @version 05.07.2016
+ */
 public class Geldbetrag
 {
     private static final Pattern _eingabePattern = Pattern
-        .compile("\\d++(,|\\.)?+(\\d{1,2}+)?+"); // Das Pattern zu der regular expressions für Eingaben.
+        .compile("\\d*+(,|\\.)?+(\\d{1,2}+)?+"); // Das Pattern zu der regular expressions für Eingaben.
     private static final Pattern _natuerlicheZahlPattern = Pattern
         .compile("\\d++"); // Ein Pattern das alle natürlichen Zahlen zulässt.
 
-    private static HashMap<Integer, Geldbetrag> _alleGeldbetraege; // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
+    private static HashMap<Integer, Geldbetrag> _alleGeldbetraege = new HashMap<>(); // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
 
     private final int _gesamterCentbetrag; // Der gesamte Betrag dieses Geldbetrags in Cent.
+
     private final String _betragString; // Eine String repräsentation des Geldbetrags in der Form "EE,CC".
+    private final int _maximalerErlaubterFaktor; // Der größte Faktor mit dem dieser Geldbetrag multipliziert werden darf.
 
     /**
      * Initialisiert einen neuen Geldbetrag. Es darf noch keinen anderen Geldbetrag mit dem gleichen gesamten Centbetrag geben.
@@ -33,6 +43,7 @@ public class Geldbetrag
 
         _gesamterCentbetrag = gesamterCentbetrag;
         _betragString = erstelleBetragString();
+        _maximalerErlaubterFaktor = bestimmeMaximalenErlaubtenFaktor();
     }
 
     /**
@@ -62,6 +73,7 @@ public class Geldbetrag
      */
     public static Geldbetrag select(String geldBetragString)
     {
+        geldBetragString = geldBetragString.trim();
         return select(parseEingabe(geldBetragString));
     }
 
@@ -126,11 +138,15 @@ public class Geldbetrag
     }
 
     /**
-     * @param faktor Eine ganzzahlige, positive Zahl.
+     * @param faktor Eine ganzzahlige, positive Zahl. Der Faktor darf nicht so groß sein, dass der Wert des Ergebnisses größer ist, als Integer.MAX_VALUE.
      * @return Ein Geldbetrag, dessen Wert dem Produkt von diesem Geldwert mit dem Faktor entspricht.
+     * 
+     * @require istErlaubterFaktor(faktor)
      */
     public Geldbetrag mal(int faktor)
     {
+        assert istErlaubterFaktor(
+                faktor) : "Vorbedingung verletzt: istErlaubterFaktor(faktor)";
         return select(_gesamterCentbetrag * faktor);
     }
 
@@ -140,7 +156,7 @@ public class Geldbetrag
      * 
      * @require anderer != null
      */
-    public boolean groeßerAls(Geldbetrag anderer)
+    public boolean groesserAls(Geldbetrag anderer)
     {
         assert anderer != null : "Vorbedingung verletzt: anderer != null";
         return _gesamterCentbetrag > anderer._gesamterCentbetrag;
@@ -152,7 +168,7 @@ public class Geldbetrag
      * 
      * @require istErlaubterGesamterCentbetrag(centbetrag)
      */
-    public boolean groeßerAls(int centbetrag)
+    public boolean groesserAls(int centbetrag)
     {
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
@@ -176,6 +192,11 @@ public class Geldbetrag
     {
         assert istErlaubterString(
                 eingabe) : "Vorbedingung verletzt: istErlaubterString(centbetragString)";
+
+        if (eingabe.equals(""))
+        {
+            return 0;
+        }
 
         if (!enthaeltPunkteOderKommata(eingabe))
         {
@@ -270,20 +291,31 @@ public class Geldbetrag
     private String erstelleBetragString()
     {
         String euroCent = "" + _gesamterCentbetrag;
-        String euro = "0";
-        String cent = "00";
-        int ziffernAnzahl = euroCent.length();
 
-        if (ziffernAnzahl <= 2)
+        if (euroCent.length() == 1)
         {
-            cent = cent.substring(ziffernAnzahl) + euroCent;
+            euroCent += "0";
         }
-        else
+        if (euroCent.length() == 2)
         {
-            euro = euroCent.substring(0, ziffernAnzahl - 2);
-            cent = euroCent.substring(ziffernAnzahl - 2);
+            euroCent = "0" + euroCent;
         }
 
-        return euro + "," + cent;
+        return new StringBuilder(euroCent).insert(euroCent.length() - 2, ",")
+            .toString();
+    }
+
+    private int bestimmeMaximalenErlaubtenFaktor()
+    {
+        if (_gesamterCentbetrag == 0)
+        {
+            return Integer.MAX_VALUE;
+        }
+        return Integer.MAX_VALUE / _gesamterCentbetrag;
+    }
+
+    private boolean istErlaubterFaktor(int faktor)
+    {
+        return faktor >= 0 && faktor <= _maximalerErlaubterFaktor;
     }
 }
