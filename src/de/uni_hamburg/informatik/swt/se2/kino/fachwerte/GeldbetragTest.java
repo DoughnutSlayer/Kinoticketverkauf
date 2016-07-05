@@ -42,6 +42,12 @@ public class GeldbetragTest
             .toString());
         assertEquals("3,70", Geldbetrag.select("3.7")
             .toString());
+        assertEquals("0,00", Geldbetrag.select(".")
+            .toString());
+        assertEquals("0,00", Geldbetrag.select(" ")
+            .toString());
+        assertEquals("0,00", Geldbetrag.select("")
+            .toString());
     }
 
     /**
