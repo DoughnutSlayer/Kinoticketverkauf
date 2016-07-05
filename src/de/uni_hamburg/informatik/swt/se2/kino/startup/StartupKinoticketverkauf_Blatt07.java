@@ -4,6 +4,7 @@ import javax.swing.SwingUtilities;
 
 import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Datum;
 import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.FSK;
+import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Geldbetrag;
 import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Uhrzeit;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Film;
 import de.uni_hamburg.informatik.swt.se2.kino.materialien.Kino;
@@ -41,8 +42,8 @@ public class StartupKinoticketverkauf_Blatt07
      */
     private static Kino erzeugeKinoMitBeispieldaten()
     {
-        final Kinosaal[] saele = { new Kinosaal("Saal 1", 20, 25),
-                new Kinosaal("Saal 2", 16, 20), new Kinosaal("Saal 3", 10, 16) };
+        final Kinosaal[] saele = {new Kinosaal("Saal 1", 20, 25),
+                new Kinosaal("Saal 2", 16, 20), new Kinosaal("Saal 3", 10, 16)};
 
         // Filme: Top-5 Deutschland laut kino.de in der Kalenderwoche 20, 2011.
         Film[] filme = {
@@ -51,7 +52,7 @@ public class StartupKinoticketverkauf_Blatt07
                 new Film("Fast & Furious Five", 130, FSK.FSK12, true),
                 new Film("Rio", 96, FSK.FSK0, false),
                 new Film("Wasser für die Elefanten", 120, FSK.FSK12, false),
-                new Film("Thor", 115, FSK.FSK12, false) };
+                new Film("Thor", 115, FSK.FSK12, false)};
 
         Uhrzeit nachmittag = new Uhrzeit(17, 30);
         Uhrzeit abend = new Uhrzeit(20, 0);
@@ -64,35 +65,54 @@ public class StartupKinoticketverkauf_Blatt07
 
         final Vorstellung[] vorstellungen = {
                 // Heute
-                new Vorstellung(saele[0], filme[2], nachmittag, abend, d1, 500),
-                new Vorstellung(saele[0], filme[0], abend, spaet, d1, 700),
-                new Vorstellung(saele[0], filme[0], spaet, nacht, d1, 700),
+                new Vorstellung(saele[0], filme[2], nachmittag, abend, d1,
+                        Geldbetrag.select(500)),
+                new Vorstellung(saele[0], filme[0], abend, spaet, d1,
+                        Geldbetrag.select(700)),
+                new Vorstellung(saele[0], filme[0], spaet, nacht, d1,
+                        Geldbetrag.select(700)),
 
-                new Vorstellung(saele[1], filme[3], nachmittag, abend, d1, 900),
-                new Vorstellung(saele[1], filme[1], spaet, nacht, d1, 800),
+                new Vorstellung(saele[1], filme[3], nachmittag, abend, d1,
+                        Geldbetrag.select(900)),
+                new Vorstellung(saele[1], filme[1], spaet, nacht, d1,
+                        Geldbetrag.select(800)),
 
-                new Vorstellung(saele[2], filme[3], abend, spaet, d1, 1000),
-                new Vorstellung(saele[2], filme[4], spaet, nacht, d1, 900),
+                new Vorstellung(saele[2], filme[3], abend, spaet, d1,
+                        Geldbetrag.select(1000)),
+                new Vorstellung(saele[2], filme[4], spaet, nacht, d1,
+                        Geldbetrag.select(900)),
 
                 // Morgen
-                new Vorstellung(saele[0], filme[0], abend, spaet, d2, 500),
-                new Vorstellung(saele[0], filme[0], spaet, nacht, d2, 700),
+                new Vorstellung(saele[0], filme[0], abend, spaet, d2,
+                        Geldbetrag.select(500)),
+                new Vorstellung(saele[0], filme[0], spaet, nacht, d2,
+                        Geldbetrag.select(700)),
 
-                new Vorstellung(saele[1], filme[2], nachmittag, abend, d2, 900),
-                new Vorstellung(saele[1], filme[4], abend, nacht, d2, 800),
+                new Vorstellung(saele[1], filme[2], nachmittag, abend, d2,
+                        Geldbetrag.select(900)),
+                new Vorstellung(saele[1], filme[4], abend, nacht, d2,
+                        Geldbetrag.select(800)),
 
-                new Vorstellung(saele[2], filme[3], nachmittag, abend, d2, 1000),
-                new Vorstellung(saele[2], filme[1], spaet, nacht, d2, 900),
+                new Vorstellung(saele[2], filme[3], nachmittag, abend, d2,
+                        Geldbetrag.select(1000)),
+                new Vorstellung(saele[2], filme[1], spaet, nacht, d2,
+                        Geldbetrag.select(900)),
 
                 // Übermorgen
-                new Vorstellung(saele[0], filme[1], abend, spaet, d3, 500),
-                new Vorstellung(saele[0], filme[1], spaet, nacht, d3, 700),
+                new Vorstellung(saele[0], filme[1], abend, spaet, d3,
+                        Geldbetrag.select(500)),
+                new Vorstellung(saele[0], filme[1], spaet, nacht, d3,
+                        Geldbetrag.select(700)),
 
-                new Vorstellung(saele[1], filme[2], nachmittag, abend, d3, 900),
-                new Vorstellung(saele[1], filme[0], abend, nacht, d3, 800),
+                new Vorstellung(saele[1], filme[2], nachmittag, abend, d3,
+                        Geldbetrag.select(900)),
+                new Vorstellung(saele[1], filme[0], abend, nacht, d3,
+                        Geldbetrag.select(800)),
 
-                new Vorstellung(saele[2], filme[3], abend, spaet, d3, 1000),
-                new Vorstellung(saele[2], filme[4], spaet, nacht, d3, 900) };
+                new Vorstellung(saele[2], filme[3], abend, spaet, d3,
+                        Geldbetrag.select(1000)),
+                new Vorstellung(saele[2], filme[4], spaet, nacht, d3,
+                        Geldbetrag.select(900))};
 
         return new Kino(saele, vorstellungen);
     }
