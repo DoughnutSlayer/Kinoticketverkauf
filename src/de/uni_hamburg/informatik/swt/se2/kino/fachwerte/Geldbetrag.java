@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
- * Ein Geldbetrag steht für eine bestimmte Geldsumme.
+ * Ein Geldbetrag steht für eine bestimmte Geldsumme, er kann nicht negativ sein.
  * Man kann sich dessen Wert als String in einem geeigneten Format ausgeben lassen.
  * Man kann Geldwerte entweder mit einem Integer bzw. int-Wert auswählen, sowie mit einem geeignet formatierten String.
  * 
@@ -83,6 +83,7 @@ public class Geldbetrag
      */
     public static boolean istErlaubterString(String eingabe)
     {
+        eingabe = eingabe.trim();
         return _eingabePattern.matcher(eingabe)
             .matches();
     }
@@ -163,6 +164,18 @@ public class Geldbetrag
     }
 
     /**
+     * @param anderer Der Geldbetrag mit dem dieser Geldbetrag Verglichen werden soll.
+     * @return Ob dieser Geldbetrag größer oder gleich dem anderen Geldbetrag ist.
+     * 
+     * @require anderer != null
+     */
+    public boolean groesserGleich(Geldbetrag anderer)
+    {
+        assert anderer != null : "Vorbedingung verletzt: anderer != null";
+        return _gesamterCentbetrag >= anderer._gesamterCentbetrag;
+    }
+
+    /**
      * @param anderer Der Centbetrag mit dem Verglichen werden soll.
      * @return Ob dieser Geldbetrag größer ist, als der übergebene Centbetrag.
      * 
@@ -173,6 +186,19 @@ public class Geldbetrag
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
         return _gesamterCentbetrag > centbetrag;
+    }
+
+    /**
+     * @param anderer Der Centbetrag mit dem Verglichen werden soll.
+     * @return Ob dieser Geldbetrag größer oder gleich dem übergebenen Centbetrag ist.
+     * 
+     * @require istErlaubterGesamterCentbetrag(centbetrag)
+     */
+    public boolean groesserGleich(int centbetrag)
+    {
+        assert istErlaubterGesamterCentbetrag(
+                centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
+        return _gesamterCentbetrag >= centbetrag;
     }
 
     /**

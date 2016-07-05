@@ -8,6 +8,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
+import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Geldbetrag;
+
 /**
  * Eine Klasse die den Verkauf von Kinotickets abwickelt.
  * 
@@ -16,39 +18,29 @@ import javax.swing.text.BadLocationException;
  */
 public class BezahlWerkzeug
 {
-    private int _preis; // Der Gesamtpreis der zu bezahlenden Kinotickets.  //TODO: Geldbetrag implementieren.
+    private Geldbetrag _preis; // Der Gesamtpreis der zu bezahlenden Kinotickets.
 
     private boolean _bezahlt; // Ob die Kinotickets bezahlt wurden.
 
     private BezahlWerkzeugUI _ui; // Das UI dieses Werkzeugs.
-
-    private eingabenParser _parser; // Ein parser der die Eingaben aus dem Textfeld des UIs in Centbeträge umwandelt.
-
-    /**
-     * Initialisiert den Parser.
-     */
-    public BezahlWerkzeug()
-    {
-        _parser = new eingabenParser();
-    }
 
     /**
      * Eröffnet den Bezahldialog mit dem User.
      * @param preis Der Gesamtpreis der zu verkaufenden Kinotickets.
      * @return Ob die Kinotickets bezahlt wurden.
      * 
-     * @require preis >= 0
+     * @require Geldbetrag != null
      */
-    public boolean rufeBezahlDialogAuf(int preis)   //TODO: Geldbetrag implementieren.
+    public boolean rufeBezahlDialogAuf(Geldbetrag preis)
     {
-        assert preis >= 0 : "Vorbedingung verletzt: preis >= 0";
+        assert preis != null : "Vorbedingung verletzt: Geldbetrag != null";
 
         _preis = preis;
 
         _ui = new BezahlWerkzeugUI();
         _ui.getPreisFeld()
             .setText(erstelleBetragString(_preis));
-        aktualisiereUI(0);
+        aktualisiereUI(Geldbetrag.select(0));
         registriereUIAktionen();
 
         _ui.oeffneDialog();
@@ -57,27 +49,15 @@ public class BezahlWerkzeug
     }
 
     /**
-     * @param betrag Ein Centbetrag der zu einem String umgewandelt werden soll.
+     * @param betrag Ein Geldbetrag der zu einem String umgewandelt werden soll.
      * @return Ein String der einen EuroCent Betrag repräsentiert in der Form "10,25€".
+     * 
+     * @require betrag != null
      */
-    private String erstelleBetragString(int betrag)     //TODO: Geldbetrag implementieren.
+    private String erstelleBetragString(Geldbetrag betrag)
     {
-        String euroCent = String.valueOf(betrag);
-        String euro = "0";
-        String cent = "00";
-        int ziffernAnzahl = euroCent.length();
-
-        if (ziffernAnzahl <= 2)
-        {
-            cent = cent.substring(ziffernAnzahl) + euroCent;
-        }
-        else
-        {
-            euro = euroCent.substring(0, ziffernAnzahl - 2);
-            cent = euroCent.substring(ziffernAnzahl - 2);
-        }
-
-        return euro + "," + cent + "€";
+        assert betrag != null : "Vorbedingung verletzt: betrag != null";
+        return betrag.toString() + "€";
     }
 
     /**
@@ -131,10 +111,10 @@ public class BezahlWerkzeug
     }
 
     /**
-     * Wenn der User etwas eingegeben hat, gibt diese Methode die Eingabe an den Parser weiter und aktualisiert das UI entsprechend.
+     * Wenn der User etwas eingegeben hat, aktualisiert diese Methode das UI entsprechend.
      * @param e Das DocumentEvent das von dem Eingabefeld gesendet wurde.
      */
-    private void reagiereAufEingabe(DocumentEvent e)    //TODO: Geldbetrag implementieren.
+    private void reagiereAufEingabe(DocumentEvent e)
     {
         String eingabe = "";
         try
@@ -146,47 +126,51 @@ public class BezahlWerkzeug
         catch (BadLocationException excptn)
         {
         }
-        eingabe = eingabe.trim();
-        eingabe = _parser.formatiereEingabe(eingabe);
 
-        if (eingabe.equals(""))
+        if (!Geldbetrag.istErlaubterString(eingabe))
         {
-            aktualisiereUI(0);
+            ungültigeEingabe();
         }
         else
         {
-            aktualisiereUI(_parser.parseEingabe(eingabe));
+            aktualisiereUI(Geldbetrag.select(eingabe));
         }
     }
 
     /**
      * Aktualisiert das UI entsprechend dem eingegebenen Betrag.
      * @param gegeben Der vom Kunden gegebene Centbetrag.
+     * 
+     * @require gegeben != null
      */
-    private void aktualisiereUI(int gegeben)    //TODO: Geldbetrag implementieren.
+    private void aktualisiereUI(Geldbetrag gegeben)
     {
-        int rückgeld = gegeben - _preis;
-        boolean genugGegeben = rückgeld >= 0;
+        assert gegeben != null : "Vorbedingung verletzt: gegeben != null";
+
+        boolean genugGegeben = gegeben.groesserGleich(_preis);
         Label rueckgeldLabel = _ui.getRueckgeldLabel();
         Label rueckgeldFeld = _ui.getRueckgeldFeld();
 
-        if (rückgeld >= 0)
+        if (genugGegeben)
         {
             rueckgeldLabel.setText("Rückgeld:   ");
-            rueckgeldFeld.setText(erstelleBetragString(rückgeld));
-        }
-        else if (gegeben < 0)
-        {
-            rueckgeldLabel.setText("");
-            rueckgeldFeld.setText("Ungültige Eingabe");
+            rueckgeldFeld.setText(erstelleBetragString(gegeben.minus(_preis)));
         }
         else
         {
             rueckgeldLabel.setText("Noch zu zahlen:   ");
-            rueckgeldFeld.setText(erstelleBetragString(-rückgeld));
+            rueckgeldFeld.setText(erstelleBetragString(_preis.minus(gegeben)));
         }
 
         _ui.getOkButton()
             .setEnabled(genugGegeben);
+    }
+
+    private void ungültigeEingabe()
+    {
+        _ui.getRueckgeldLabel()
+            .setText("");
+        _ui.getRueckgeldFeld()
+            .setText("Ungültige Eingabe");
     }
 }
