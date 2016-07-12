@@ -3,6 +3,7 @@ package de.uni_hamburg.informatik.swt.se2.kino.materialien;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Geldbetrag;
 import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Platz;
 
 /**
@@ -17,6 +18,7 @@ public class Kinosaal
     private String _name;
     private int _anzahlReihen;
     private int _anzahlSitzeProReihe;
+    private Geldbetrag _maximalerPreis;
 
     /**
      * Initialisiert einen neuen Kinosaal.
@@ -42,6 +44,12 @@ public class Kinosaal
         _name = name;
         _anzahlReihen = anzahlReihen;
         _anzahlSitzeProReihe = anzahlSitzeProReihe;
+        _maximalerPreis = maximalerPreis();
+    }
+
+    private Geldbetrag maximalerPreis()
+    {
+        return Geldbetrag.select(Integer.MAX_VALUE / getPlaetze().size());
     }
 
     /**
@@ -72,6 +80,11 @@ public class Kinosaal
     public int getAnzahlSitzeProReihe()
     {
         return _anzahlSitzeProReihe;
+    }
+    
+    public Geldbetrag getMaximalerPreis()
+    {
+        return _maximalerPreis;
     }
 
     /**

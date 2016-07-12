@@ -42,6 +42,7 @@ public class Vorstellung
      * @require endzeit != null
      * @require datum != null
      * @require preis != null
+     * @require istPreisErlaubt(preis)
      * 
      * @ensure getKinosaal() == kinosaal
      * @ensure getFilm() == film
@@ -49,6 +50,7 @@ public class Vorstellung
      * @ensure getEndzeit() == endzeit
      * @ensure getDatum() == datum
      * @ensure getPreis() == preis
+     * @ensure istPreisErlaubt(preis)
      */
     public Vorstellung(Kinosaal kinosaal, Film film, Uhrzeit anfangszeit,
             Uhrzeit endzeit, Datum datum, Geldbetrag preis)
@@ -59,6 +61,7 @@ public class Vorstellung
         assert endzeit != null : "Vorbedingung verletzt: endzeit != null";
         assert datum != null : "Vorbedingung verletzt: datum != null";
         assert preis != null : "Vorbedingung verletzt: preis != null";
+        assert istPreisErlaubt(preis, kinosaal) : "Vorbedingung verletzt: istPreisErlaubt(preis, kinosaal)";
 
         _kinosaal = kinosaal;
         _film = film;
@@ -129,6 +132,16 @@ public class Vorstellung
     public Geldbetrag getPreis()
     {
         return _preis;
+    }
+    
+    public boolean istPreisErlaubt(Geldbetrag preis, Kinosaal kinosaal)
+    {
+        return preis.groesserGleich(0) && !preis.groesserAls(kinosaal.getMaximalerPreis());
+    }
+    
+    public boolean istPreisErlaubt(Geldbetrag preis)
+    {
+        return preis.groesserGleich(0) && !preis.groesserAls(_kinosaal.getMaximalerPreis());
     }
 
     /**
@@ -221,7 +234,7 @@ public class Vorstellung
     {
         assert platz != null : "Vorbedingung verletzt: platz != null";
         assert hatPlatz(platz) : "Vorbedingung verletzt: hatPlatz(platz)";
-        assert !istPlatzVerkauft(
+        assert!istPlatzVerkauft(
                 platz) : "Vorbedingung verletzt: !istPlatzVerkauft(platz)";
 
         _verkauft[platz.getReihe()][platz.getSitz()] = true;
