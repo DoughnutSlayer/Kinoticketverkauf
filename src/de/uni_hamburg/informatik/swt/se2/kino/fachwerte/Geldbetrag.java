@@ -1,6 +1,7 @@
 package de.uni_hamburg.informatik.swt.se2.kino.fachwerte;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -14,7 +15,7 @@ import java.util.regex.Pattern;
 public class Geldbetrag
 {
     private static final Pattern EINGABE_PATTERN = Pattern
-        .compile("\\d*+(,|\\.)?+(\\d{1,2}+)?+"); // Das Pattern zu der regular expressions für Eingaben.
+        .compile("(\\d*+)(,|\\.)?+(\\d{0,2}+)"); // Das Pattern zu der regular expressions für Eingaben.
 
     private static final HashMap<Integer, Geldbetrag> ALLE_GELDBETRÄGE = new HashMap<>(); // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
 
@@ -36,7 +37,7 @@ public class Geldbetrag
     {
         assert istErlaubterGesamterCentbetrag(
                 gesamterCentbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(gesamterCentbetrag)";
-        assert!ALLE_GELDBETRÄGE.containsKey(
+        assert !ALLE_GELDBETRÄGE.containsKey(
                 gesamterCentbetrag) : "Vorbedingung verletzt: !_alleGeldbeträge.containsKey(gesamterCentbetrag)";
 
         _gesamterCentbetrag = gesamterCentbetrag;
@@ -73,7 +74,7 @@ public class Geldbetrag
     {
         assert istErlaubterString(
                 geldBetragString) : "Vorbedingung verletzt: istErlaubterString(centbetragString)";
-                
+
         geldBetragString = geldBetragString.trim();
         return select(parseEingabe(geldBetragString));
     }
@@ -199,25 +200,26 @@ public class Geldbetrag
             return 0;
         }
 
-        if (!enthaeltPunkteOderKommata(eingabe))
+        Matcher eingabeMatcher = EINGABE_PATTERN.matcher(eingabe);
+        eingabeMatcher.matches();
+
+        if (!eingabeIstKommazahl(eingabeMatcher))
         {
             return liesEuroBetrag(eingabe);
         }
 
-        return liesKommaBetrag(eingabe);
+        return liesKommaBetrag(eingabeMatcher);
     }
 
     /**
-     * @param string Ein String der überprüft werden soll.
-     * @return Ob der eingegebene String Punkte (".") oder Kommata (",") enthält.
+     * @param eingabeMatcher Ein Matcher, der eine valide Eingabe gegen das Eingabepattern gematcht hat.
+     * @return Ob die Eingabe ein Punkt oder Komma enthaelt.
+     * 
+     * @require eingabeMatcher.matches()
      */
-    private static boolean enthaeltPunkteOderKommata(String string)
+    private static boolean eingabeIstKommazahl(Matcher eingabeMatcher)
     {
-        if (string == null)
-        {
-            return false;
-        }
-        return string.contains(".") || string.contains(",");
+        return eingabeMatcher.group(2) != null;
     }
 
     /**
@@ -246,25 +248,15 @@ public class Geldbetrag
      * 
      * @require istErlaubterString(kommaBetrag)
      */
-    private static int liesKommaBetrag(String kommaBetrag)
+    private static int liesKommaBetrag(Matcher eingabeMatcher)
     {
-        String[] gespalteneZahl = kommaBetrag.split(",|\\.");
+        String euroString = eingabeMatcher.group(1);
+        String centString = eingabeMatcher.group(3);
+
         int euro = 0;
         int cent = 0;
 
-        switch (gespalteneZahl.length)
-        {
-        case 0:
-            return 0;
-        case 1:
-            return liesEuroBetrag(gespalteneZahl[0]);
-        }
-
-        String euroString = gespalteneZahl[0];
-        String centString = gespalteneZahl[1];
-
-        if (!euroString.trim()
-            .equals(""))
+        if (!"".equals(euroString))
         {
             euro = liesNatuerlicheZahl(euroString);
         }
