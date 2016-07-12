@@ -13,10 +13,12 @@ import java.util.regex.Pattern;
  */
 public class Geldbetrag
 {
-    private static final Pattern EINGABE_PATTERN = Pattern
+    private static final Pattern _eingabePattern = Pattern
         .compile("\\d*+(,|\\.)?+(\\d{1,2}+)?+"); // Das Pattern zu der regular expressions für Eingaben.
+    private static final Pattern _natuerlicheZahlPattern = Pattern
+        .compile("\\d++"); // Ein Pattern das alle natürlichen Zahlen zulässt.
 
-    private static final HashMap<Integer, Geldbetrag> ALLE_GELDBETRÄGE = new HashMap<>(); // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
+    private static HashMap<Integer, Geldbetrag> _alleGeldbetraege = new HashMap<>(); // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
 
     private final int _gesamterCentbetrag; // Der gesamte Betrag dieses Geldbetrags in Cent.
 
@@ -36,13 +38,12 @@ public class Geldbetrag
     {
         assert istErlaubterGesamterCentbetrag(
                 gesamterCentbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(gesamterCentbetrag)";
-        assert!ALLE_GELDBETRÄGE.containsKey(
+        assert !_alleGeldbetraege.containsKey(
                 gesamterCentbetrag) : "Vorbedingung verletzt: !_alleGeldbeträge.containsKey(gesamterCentbetrag)";
 
         _gesamterCentbetrag = gesamterCentbetrag;
         _betragString = erstelleBetragString();
         _maximalerErlaubterFaktor = bestimmeMaximalenErlaubtenFaktor();
-        ALLE_GELDBETRÄGE.put(gesamterCentbetrag, this);
     }
 
     /**
@@ -56,12 +57,13 @@ public class Geldbetrag
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(gesamterCentbetrag)";
 
-        if (ALLE_GELDBETRÄGE.containsKey(centbetrag))
+        if (_alleGeldbetraege.containsKey(centbetrag))
         {
-            return ALLE_GELDBETRÄGE.get(centbetrag);
+            return _alleGeldbetraege.get(centbetrag);
         }
 
         Geldbetrag neuerGeldbetrag = new Geldbetrag(centbetrag);
+        _alleGeldbetraege.put(centbetrag, neuerGeldbetrag);
         return neuerGeldbetrag;
     }
 
@@ -71,9 +73,6 @@ public class Geldbetrag
      */
     public static Geldbetrag select(String geldBetragString)
     {
-        assert istErlaubterString(
-                geldBetragString) : "Vorbedingung verletzt: istErlaubterString(centbetragString)";
-                
         geldBetragString = geldBetragString.trim();
         return select(parseEingabe(geldBetragString));
     }
@@ -82,10 +81,10 @@ public class Geldbetrag
      * @param eingabe Ein String der einen Geldbetrag darstellen soll.
      * @return Ob dieser String einem Geldbetrag zuzuordnen ist.
      */
-    public static boolean istErlaubterString(String eingabe) //TODO: zu große ints nicht erlauben
+    public static boolean istErlaubterString(String eingabe)
     {
         eingabe = eingabe.trim();
-        return EINGABE_PATTERN.matcher(eingabe)
+        return _eingabePattern.matcher(eingabe)
             .matches();
     }
 
@@ -96,12 +95,36 @@ public class Geldbetrag
     }
 
     /**
+     * Es darf immer nur einen Geldbetrag mit dem gleichen Wert geben.
+     * Daher sind zwei Referenzen auf einen Geldbetrag gleich, wenn sie auf den selben Geldbetrag verweisen. 
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof Geldbetrag))
+        {
+            return false;
+        }
+
+        Geldbetrag anderer = (Geldbetrag) obj;
+        return anderer == this;
+    }
+
+    /**
+     * Der HashCode basiert auf dem Wert des Geldbetrages.
+     */
+    @Override
+    public int hashCode()
+    {
+        return ("" + _gesamterCentbetrag).hashCode();
+    }
+
+    /**
      * @param summand Der Geldbetrag, der zu diesem Geldbetrag addiert werden soll.
      * @return Ein Geldbetrag, dessen Wert der Summe von diesem Geldwert und dem Summanden entspricht.
      */
     public Geldbetrag plus(Geldbetrag summand)
     {
-        assert summand != null : "Vorbedingung verletzt: summand != null";
         return select(_gesamterCentbetrag + summand._gesamterCentbetrag);
     }
 
@@ -112,7 +135,6 @@ public class Geldbetrag
      */
     public Geldbetrag minus(Geldbetrag subtrahend)
     {
-        assert subtrahend != null : "Vorbedingung verletzt: subtrahen != null";
         return select(_gesamterCentbetrag - subtrahend._gesamterCentbetrag);
     }
 
@@ -194,6 +216,9 @@ public class Geldbetrag
      */
     private static Integer parseEingabe(String eingabe)
     {
+        assert istErlaubterString(
+                eingabe) : "Vorbedingung verletzt: istErlaubterString(centbetragString)";
+
         if (eingabe.equals(""))
         {
             return 0;
@@ -237,7 +262,9 @@ public class Geldbetrag
      */
     private static int liesNatuerlicheZahl(String zahl)
     {
-        return Integer.parseInt(zahl);
+        assert _natuerlicheZahlPattern.matcher(zahl)
+            .matches() : "Vorbedingung verletzt: _natuerlicheZahlPattern.matcher(eingabe).matches()";
+        return Integer.parseUnsignedInt(zahl);
     }
 
     /**
@@ -248,6 +275,9 @@ public class Geldbetrag
      */
     private static int liesKommaBetrag(String kommaBetrag)
     {
+        assert istErlaubterString(
+                kommaBetrag) : "Vorbedingung verletzt: istErlaubterString(kommaBetrag)";
+
         String[] gespalteneZahl = kommaBetrag.split(",|\\.");
         int euro = 0;
         int cent = 0;
@@ -286,20 +316,21 @@ public class Geldbetrag
      */
     private String erstelleBetragString()
     {
-        String betragString = _gesamterCentbetrag / 100 + ","
-                + _gesamterCentbetrag % 100;
-        if (_gesamterCentbetrag % 100 < 10)
+        String euroCent = "" + _gesamterCentbetrag;
+
+        if (euroCent.length() == 1)
         {
-            betragString = betragString.substring(0, betragString.length() - 1)
-                    + "0" + _gesamterCentbetrag % 100;
+            euroCent += "0";
+        }
+        if (euroCent.length() == 2)
+        {
+            euroCent = "0" + euroCent;
         }
 
-        return betragString;
+        return new StringBuilder(euroCent).insert(euroCent.length() - 2, ",")
+            .toString();
     }
 
-    /**
-     * @return Der maximale Faktor mit dem dieser Gedlbetrag multipliziert werden kann.
-     */
     private int bestimmeMaximalenErlaubtenFaktor()
     {
         if (_gesamterCentbetrag == 0)
@@ -309,11 +340,7 @@ public class Geldbetrag
         return Integer.MAX_VALUE / _gesamterCentbetrag;
     }
 
-    /**
-     * @param faktor Der Faktor mit dem dieser Geldbetrag multipliziert werden soll.
-     * @return Ob der Faktor mit diesem Geldwert multipliziert werden darf.
-     */
-    public boolean istErlaubterFaktor(int faktor)
+    private boolean istErlaubterFaktor(int faktor)
     {
         return faktor >= 0 && faktor <= _maximalerErlaubterFaktor;
     }
