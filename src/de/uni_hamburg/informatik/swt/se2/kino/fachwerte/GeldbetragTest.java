@@ -72,7 +72,6 @@ public class GeldbetragTest
         }
         catch (AssertionError e)
         {
-            System.out.println("Addition fehlgeschlagen!");
             zuHoheAdditionUnmoeglich = true;
         }
 
@@ -97,7 +96,6 @@ public class GeldbetragTest
         }
         catch (AssertionError e)
         {
-            System.out.println("Subtraktion fehlgeschlagen!");
             subtraktionEinesGroesserenBetragsUnmoeglich = true;
         }
 
@@ -122,7 +120,6 @@ public class GeldbetragTest
         }
         catch (AssertionError e)
         {
-            System.out.println("Multiplikation fehlgeschlagen!");
             multiplikationMitZuGrossemFaktorUnmoeglich = true;
         }
 
@@ -136,17 +133,9 @@ public class GeldbetragTest
     public void vergleichen()
     {
         assertTrue(_zehnEuroInt.groesserAls(_fünfEuroFünfundzwanzigString));
-        assertTrue(_zehnEuroInt.groesserAls(525));
-
-        assertFalse(_dreißigCentInt.groesserAls(_zehnEuroString));
-        assertFalse(_dreißigCentInt.groesserAls(100));
-
-        
         assertTrue(_zehnEuroInt.groesserGleich(_fünfEuroFünfundzwanzigString));
-        assertTrue(_zehnEuroInt.groesserGleich(1000));
-
+        assertFalse(_dreißigCentInt.groesserAls(_zehnEuroString));
         assertFalse(_dreißigCentInt.groesserGleich(_zehnEuroString));
-        assertFalse(_dreißigCentInt.groesserGleich(100));
     }
 
     /**
@@ -161,6 +150,7 @@ public class GeldbetragTest
         String wert4 = ",40";
         String wert5 = "133,";
         String wert6 = "12,50,10";
+        String wert7 = "1234567890";
 
         assertTrue(Geldbetrag.istErlaubterString(wert1));
         assertTrue(Geldbetrag.istErlaubterString(wert2));
@@ -168,5 +158,6 @@ public class GeldbetragTest
         assertTrue(Geldbetrag.istErlaubterString(wert4));
         assertTrue(Geldbetrag.istErlaubterString(wert5));
         assertFalse(Geldbetrag.istErlaubterString(wert6));
+        assertFalse(Geldbetrag.istErlaubterString(wert7));
     }
 }

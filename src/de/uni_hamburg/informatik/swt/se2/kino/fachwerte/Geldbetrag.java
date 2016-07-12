@@ -70,7 +70,7 @@ public class Geldbetrag
         assert istErlaubterString(
                 geldBetragString) : "Vorbedingung verletzt: istErlaubterString(centbetragString)";
 
-        geldBetragString = geldBetragString.trim();
+        geldBetragString = formatiereEingabe(geldBetragString.trim());
         return select(parseEingabe(geldBetragString));
     }
 
@@ -78,17 +78,20 @@ public class Geldbetrag
      * @param eingabe Ein String der einen Geldbetrag darstellen soll.
      * @return Ob dieser String einem Geldbetrag zuzuordnen ist.
      */
-    public static boolean istErlaubterString(String eingabe) //TODO: zu große ints nicht erlauben
+    public static boolean istErlaubterString(String eingabe)
     {
         eingabe = eingabe.trim();
-        return EINGABE_PATTERN.matcher(eingabe)
-            .matches();
-    }
+        Matcher eingabeMatcher = EINGABE_PATTERN.matcher(eingabe);
+        if (!eingabeMatcher.matches())
+        {
+            return false;
+        }
 
-    @Override
-    public String toString()
-    {
-        return _BETRAG_STRING;
+        eingabe = formatiereEingabe(eingabe);
+        String eingabeCentGesamt = new StringBuilder(eingabe)
+            .deleteCharAt(eingabe.length() - 2)
+            .toString();
+        return !istZahlZuGroßFuerInt(eingabeCentGesamt);
     }
 
     /**
@@ -150,29 +153,18 @@ public class Geldbetrag
     }
 
     /**
-     * @param anderer Der Centbetrag mit dem Verglichen werden soll.
-     * @return Ob dieser Geldbetrag größer ist, als der übergebene Centbetrag.
-     * 
-     * @require istErlaubterGesamterCentbetrag(centbetrag)
+     * @param faktor Der Faktor mit dem dieser Geldbetrag multipliziert werden soll.
+     * @return Ob der Faktor mit diesem Geldwert multipliziert werden darf.
      */
-    public boolean groesserAls(int centbetrag)
+    public boolean istErlaubterFaktor(int faktor)
     {
-        assert istErlaubterGesamterCentbetrag(
-                centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
-        return _GESAMTER_CENTBETRAG > centbetrag;
+        return faktor >= 0 && faktor <= _MAXIMALER_ERLAUBTER_FAKTOR;
     }
 
-    /**
-     * @param anderer Der Centbetrag mit dem Verglichen werden soll.
-     * @return Ob dieser Geldbetrag größer oder gleich dem übergebenen Centbetrag ist.
-     * 
-     * @require istErlaubterGesamterCentbetrag(centbetrag)
-     */
-    public boolean groesserGleich(int centbetrag)
+    @Override
+    public String toString()
     {
-        assert istErlaubterGesamterCentbetrag(
-                centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
-        return _GESAMTER_CENTBETRAG >= centbetrag;
+        return _BETRAG_STRING;
     }
 
     /**
@@ -185,87 +177,75 @@ public class Geldbetrag
     }
 
     /**
+     * Wandelt einen String, der als Betrag erlaubt ist, um in die Form "EE,CC".
+     * @param Der String, der umgewandelt werden soll.
+     * @return Der umgewandelte String in der Form "EE,CC".
+     */
+    private static String formatiereEingabe(String eingabe)
+    {
+        Matcher eingabeMatcher = EINGABE_PATTERN.matcher(eingabe);
+        eingabeMatcher.matches();
+
+        String eingabeEuro = eingabeMatcher.group(1);
+        String eingabeCent = eingabeMatcher.group(3);
+
+        String ergebnisEuro = "0";
+        String ergebnisCent = "00";
+
+        if (!eingabeEuro.equals(""))
+        {
+            ergebnisEuro = eingabeEuro;
+        }
+
+        if (!eingabeCent.equals(""))
+        {
+            String optionale0 = (eingabeCent.length() == 1) ? "0" : "";
+            ergebnisCent = eingabeCent + optionale0;
+        }
+
+        return ergebnisEuro + "," + ergebnisCent;
+    }
+
+    /**
      * @param eingabe Ein String in der Form "EE,CC". 
      * @return Ein Integer Wert der Form EECC.
      */
     private static Integer parseEingabe(String eingabe)
     {
-        if (eingabe.equals(""))
-        {
-            return 0;
-        }
-
-        Matcher eingabeMatcher = EINGABE_PATTERN.matcher(eingabe);
+        Matcher eingabeMatcher = EINGABE_PATTERN
+            .matcher(formatiereEingabe(eingabe));
         eingabeMatcher.matches();
 
-        if (!eingabeIstKommazahl(eingabeMatcher))
-        {
-            return liesEuroBetrag(eingabe);
-        }
-
-        return liesKommaBetrag(eingabeMatcher);
+        return Integer
+            .parseInt(eingabeMatcher.group(1) + eingabeMatcher.group(3));
     }
 
     /**
-     * @param eingabeMatcher Ein Matcher, der eine valide Eingabe gegen das Eingabepattern gematcht hat.
-     * @return Ob die Eingabe ein Punkt oder Komma enthaelt.
+     * Bestimmt ob ein String, der nur aus Ziffern besteht, einen größeren Wert hat, als Integer.MAX_VALUE.
      * 
-     * @require eingabeMatcher.matches()
-     */
-    private static boolean eingabeIstKommazahl(Matcher eingabeMatcher)
-    {
-        return eingabeMatcher.group(2) != null;
-    }
-
-    /**
-     * @param eingabe Ein String der einen Eurobetrag repräsentiert. Der String darf nur Ziffern enthalten.
-     * @return Der Wert des Eurobetrags in Cent.
-     */
-    private static Integer liesEuroBetrag(String eingabe)
-    {
-        return liesNatuerlicheZahl(eingabe) * 100;
-    }
-
-    /**
-     * @param zahl Ein String der nur Ziffern enthält.
-     * @return Die Zahl, welche von der Eingabe dargestellt wird.
+     * @param zahl Der String, der überprüft werden soll.
+     * @return Ob der Wert von zahl größer ist, als Integer.MAX_VALUE.
      * 
-     * @require _natuerlicheZahlPattern.matcher(eingabe).matches()
+     * @require zahl.matches("\\d*")
      */
-    private static int liesNatuerlicheZahl(String zahl)
+    private static boolean istZahlZuGroßFuerInt(String zahl)
     {
-        return Integer.parseInt(zahl);
-    }
-
-    /**
-     * @param kommaBetrag Ein String der einen Kommabetrag repräsentiert.
-     * @return Der kommaBetrag als int-Wert.
-     * 
-     * @require istErlaubterString(kommaBetrag)
-     */
-    private static int liesKommaBetrag(Matcher eingabeMatcher)
-    {
-        String euroString = eingabeMatcher.group(1);
-        String centString = eingabeMatcher.group(3);
-
-        int euro = 0;
-        int cent = 0;
-
-        if (!"".equals(euroString))
+        if (zahl.length() != 10)
         {
-            euro = liesNatuerlicheZahl(euroString);
+            return zahl.length() > 10;
         }
 
-        if (centString.length() == 1)
+        char[] ziffern = zahl.toCharArray();
+        char[] integerMaxZiffern = String.valueOf(Integer.MAX_VALUE)
+            .toCharArray();
+        for (int i = 0; i < 10; i++)
         {
-            cent = 10 * liesNatuerlicheZahl(centString);
+            if (ziffern[i] != integerMaxZiffern[i])
+            {
+                return ziffern[i] > integerMaxZiffern[i];
+            }
         }
-        else if (centString.length() == 2)
-        {
-            cent = liesNatuerlicheZahl(centString);
-        }
-
-        return (euro * 100) + cent;
+        return false;
     }
 
     /**
@@ -273,15 +253,11 @@ public class Geldbetrag
      */
     private String erstelleBetragString()
     {
-        String betragString = _GESAMTER_CENTBETRAG / 100 + ","
-                + _GESAMTER_CENTBETRAG % 100;
-        if (_GESAMTER_CENTBETRAG % 100 < 10)
-        {
-            betragString = betragString.substring(0, betragString.length() - 1)
-                    + "0" + _GESAMTER_CENTBETRAG % 100;
-        }
+        String euroString = "" + _GESAMTER_CENTBETRAG / 100;
+        String optionale0 = (_GESAMTER_CENTBETRAG % 100 >= 10) ? "" : "0";
+        String centString = optionale0 + _GESAMTER_CENTBETRAG;
 
-        return betragString;
+        return euroString + ',' + centString;
     }
 
     /**
@@ -294,14 +270,5 @@ public class Geldbetrag
             return Integer.MAX_VALUE;
         }
         return Integer.MAX_VALUE / _GESAMTER_CENTBETRAG;
-    }
-
-    /**
-     * @param faktor Der Faktor mit dem dieser Geldbetrag multipliziert werden soll.
-     * @return Ob der Faktor mit diesem Geldwert multipliziert werden darf.
-     */
-    public boolean istErlaubterFaktor(int faktor)
-    {
-        return faktor >= 0 && faktor <= _MAXIMALER_ERLAUBTER_FAKTOR;
     }
 }
