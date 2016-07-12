@@ -17,6 +17,7 @@ import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Platz;
  */
 class PlatzSelectionEvent extends EventObject
 {
+    private Platz _geaenderterPlatz;
     private Set<Platz> _ausgewaehltePlaetze;
 
     /**
@@ -25,10 +26,19 @@ class PlatzSelectionEvent extends EventObject
      * @param source Das Objekt, von dem das Ereignis ausgelöst wurde.
      * @param ausgewaehltePlaetze die Menge der ausgewählten Plätze.
      */
-    public PlatzSelectionEvent(Object source, Set<Platz> ausgewaehltePlaetze)
+    public PlatzSelectionEvent(Object source, Platz geaenderterPlatz, Set<Platz> ausgewaehltePlaetze)
     {
         super(source);
+        _geaenderterPlatz = geaenderterPlatz;
         _ausgewaehltePlaetze = new HashSet<Platz>(ausgewaehltePlaetze);
+    }
+    
+    /**
+     * Gibt den Platz, dessen Zustand während dieses Ereignisses verändert wurde, zurück. 
+     */
+    public Platz getGeaendertenPlatz()
+    {
+        return _geaenderterPlatz;
     }
 
     /**

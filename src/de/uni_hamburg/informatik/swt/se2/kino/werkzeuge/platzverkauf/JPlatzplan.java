@@ -74,16 +74,23 @@ class JPlatzplan extends JComponent
                 {
                     _ausgewaehltePlaetze.remove(platz);
                     button.setAusgewaehlt(false);
-                    informiereSelectionListener(_ausgewaehltePlaetze);
+                    informiereSelectionListener(platz, _ausgewaehltePlaetze);
                 }
                 else
                 {
                     _ausgewaehltePlaetze.add(platz);
                     button.setAusgewaehlt(true);
-                    informiereSelectionListener(_ausgewaehltePlaetze);
+                    informiereSelectionListener(platz, _ausgewaehltePlaetze);
                 }
             }
         };
+    }
+    
+    public void platzAbwaehlen(Platz platz)
+    {
+        _ausgewaehltePlaetze.remove(platz);
+        _buttons[platz.getReihe()][platz.getSitz()].setAusgewaehlt(false);
+        informiereSelectionListener(platz, _ausgewaehltePlaetze);
     }
 
     /**
@@ -112,10 +119,11 @@ class JPlatzplan extends JComponent
      * 
      * @param ausgewaehltePlaetze die neue Auswahl.
      */
-    private void informiereSelectionListener(Set<Platz> ausgewaehltePlaetze)
+    private void informiereSelectionListener(Platz geaenderterPlatz,
+            Set<Platz> ausgewaehltePlaetze)
     {
         PlatzSelectionEvent event = new PlatzSelectionEvent(this,
-                ausgewaehltePlaetze);
+                geaenderterPlatz, ausgewaehltePlaetze);
         for (PlatzSelectionListener listener : _selectionListener)
         {
             listener.auswahlGeaendert(event);
@@ -162,7 +170,7 @@ class JPlatzplan extends JComponent
 
         // Nach der Änderung ist kein Platz ausgewählt
         _ausgewaehltePlaetze.clear();
-        informiereSelectionListener(_ausgewaehltePlaetze);
+        informiereSelectionListener(null, _ausgewaehltePlaetze);
     }
 
     /**
@@ -174,9 +182,10 @@ class JPlatzplan extends JComponent
      */
     private void imGitterEinfuegen(Component component, int gridx, int gridy)
     {
-        add(component, new GridBagConstraints(gridx, gridy, 1, 1, 1.0, 1.0,
-                GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(
-                        2, 2, 2, 2), 0, 0));
+        add(component,
+                new GridBagConstraints(gridx, gridy, 1, 1, 1.0, 1.0,
+                        GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                        new Insets(2, 2, 2, 2), 0, 0));
     }
 
     /**
