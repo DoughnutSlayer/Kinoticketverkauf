@@ -27,8 +27,8 @@ import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Platz;
  * kapselt also die Abbildung der Events der einzelnen Buttons auf ein
  * Auswahl-Event.
  * 
- * @author SE2-Team
- * @version SoSe 2016
+ * @author SE2-Team, TMNT
+ * @version 12.07.2016
  */
 class JPlatzplan extends JComponent
 {

@@ -21,8 +21,8 @@ import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.bezahlwerkzeug.BezahlWer
  * Dieses Werkzeug ist ein eingebettetes Subwerkzeug. Es kann nicht beobachtet
  * werden.
  * 
- * @author SE2-Team
- * @version SoSe 2016
+ * @author SE2-Team, TMNT
+ * @version 12.07.2016
  */
 public class PlatzVerkaufsWerkzeug
 {

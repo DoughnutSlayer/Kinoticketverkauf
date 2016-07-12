@@ -12,8 +12,8 @@ import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Platz;
  * Platzplan Plätze auswählt. Das Event enthält die Menge der Plätze, die jetzt
  * ausgewählt sind.
  * 
- * @author SE2-Team
- * @version SoSe 2016
+ * @author SE2-Team, TMNT
+ * @version 12.07.2016
  */
 class PlatzSelectionEvent extends EventObject
 {

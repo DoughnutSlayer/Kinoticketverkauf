@@ -13,8 +13,8 @@ import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Uhrzeit;
  * und wo läuft welcher Film) und zum anderen, welche Plätze für diese
  * Vorstellung bereits verkauft wurden.
  * 
- * @author SE2-Team
- * @version SoSe 2016
+ * @author SE2-Team, TMNT
+ * @version 12.07.2016
  */
 public class Vorstellung
 {

@@ -14,7 +14,7 @@ import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Geldbetrag;
  * Eine Klasse die den Verkauf von Kinotickets abwickelt.
  * 
  * @author TMNT
- * @version 26.06.2016
+ * @version 05.07.2016
  */
 public class BezahlWerkzeug
 {

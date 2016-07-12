@@ -15,8 +15,8 @@ import de.uni_hamburg.informatik.swt.se2.kino.werkzeuge.beobachter_beobachtbar.k
 /**
  * Startet die Anwendung.
  * 
- * @author SE2-Team
- * @version SoSe 2016
+ * @author SE2-Team, TMNT
+ * @version 05.07.2016
  */
 public class StartupKinoticketverkauf_Blatt07
 {
