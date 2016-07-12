@@ -47,11 +47,6 @@ public class Kinosaal
         _maximalerPreis = maximalerPreis();
     }
 
-    private Geldbetrag maximalerPreis()
-    {
-        return Geldbetrag.select(Integer.MAX_VALUE / getPlaetze().size());
-    }
-
     /**
      * Gibt den Namen dieses Kinosaals zurück.
      * 
@@ -156,5 +151,10 @@ public class Kinosaal
     public String toString()
     {
         return "Kinosaal: Name=" + _name;
+    }
+    
+    private Geldbetrag maximalerPreis()
+    {
+        return Geldbetrag.select(Integer.MAX_VALUE / getPlaetze().size());
     }
 }
