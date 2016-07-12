@@ -19,10 +19,10 @@ public class Geldbetrag
 
     private static final HashMap<Integer, Geldbetrag> ALLE_GELDBETRÄGE = new HashMap<>(); // Eine Hashmap die jeden erstellten Geldbetrag, mit dessen gesamten Centbetrag als Key, speichert.
 
-    private final int _gesamterCentbetrag; // Der gesamte Betrag dieses Geldbetrags in Cent.
+    private final int _GESAMTER_CENTBETRAG; // Der gesamte Betrag dieses Geldbetrags in Cent.
 
-    private final String _betragString; // Eine String repräsentation des Geldbetrags in der Form "EE,CC".
-    private final int _maximalerErlaubterFaktor; // Der größte Faktor mit dem dieser Geldbetrag multipliziert werden darf.
+    private final String _BETRAG_STRING; // Eine String repräsentation des Geldbetrags in der Form "EE,CC".
+    private final int _MAXIMALER_ERLAUBTER_FAKTOR; // Der größte Faktor mit dem dieser Geldbetrag multipliziert werden darf.
 
     /**
      * Initialisiert einen neuen Geldbetrag. Es darf noch keinen anderen Geldbetrag mit dem gleichen gesamten Centbetrag geben.
@@ -35,14 +35,9 @@ public class Geldbetrag
      */
     private Geldbetrag(Integer gesamterCentbetrag)
     {
-        assert istErlaubterGesamterCentbetrag(
-                gesamterCentbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(gesamterCentbetrag)";
-        assert !ALLE_GELDBETRÄGE.containsKey(
-                gesamterCentbetrag) : "Vorbedingung verletzt: !_alleGeldbeträge.containsKey(gesamterCentbetrag)";
-
-        _gesamterCentbetrag = gesamterCentbetrag;
-        _betragString = erstelleBetragString();
-        _maximalerErlaubterFaktor = bestimmeMaximalenErlaubtenFaktor();
+        _GESAMTER_CENTBETRAG = gesamterCentbetrag;
+        _BETRAG_STRING = erstelleBetragString();
+        _MAXIMALER_ERLAUBTER_FAKTOR = bestimmeMaximalenErlaubtenFaktor();
         ALLE_GELDBETRÄGE.put(gesamterCentbetrag, this);
     }
 
@@ -93,7 +88,7 @@ public class Geldbetrag
     @Override
     public String toString()
     {
-        return _betragString;
+        return _BETRAG_STRING;
     }
 
     /**
@@ -103,7 +98,7 @@ public class Geldbetrag
     public Geldbetrag plus(Geldbetrag summand)
     {
         assert summand != null : "Vorbedingung verletzt: summand != null";
-        return select(_gesamterCentbetrag + summand._gesamterCentbetrag);
+        return select(_GESAMTER_CENTBETRAG + summand._GESAMTER_CENTBETRAG);
     }
 
     /**
@@ -114,7 +109,7 @@ public class Geldbetrag
     public Geldbetrag minus(Geldbetrag subtrahend)
     {
         assert subtrahend != null : "Vorbedingung verletzt: subtrahen != null";
-        return select(_gesamterCentbetrag - subtrahend._gesamterCentbetrag);
+        return select(_GESAMTER_CENTBETRAG - subtrahend._GESAMTER_CENTBETRAG);
     }
 
     /**
@@ -127,7 +122,7 @@ public class Geldbetrag
     {
         assert istErlaubterFaktor(
                 faktor) : "Vorbedingung verletzt: istErlaubterFaktor(faktor)";
-        return select(_gesamterCentbetrag * faktor);
+        return select(_GESAMTER_CENTBETRAG * faktor);
     }
 
     /**
@@ -139,7 +134,7 @@ public class Geldbetrag
     public boolean groesserAls(Geldbetrag anderer)
     {
         assert anderer != null : "Vorbedingung verletzt: anderer != null";
-        return _gesamterCentbetrag > anderer._gesamterCentbetrag;
+        return _GESAMTER_CENTBETRAG > anderer._GESAMTER_CENTBETRAG;
     }
 
     /**
@@ -151,7 +146,7 @@ public class Geldbetrag
     public boolean groesserGleich(Geldbetrag anderer)
     {
         assert anderer != null : "Vorbedingung verletzt: anderer != null";
-        return _gesamterCentbetrag >= anderer._gesamterCentbetrag;
+        return _GESAMTER_CENTBETRAG >= anderer._GESAMTER_CENTBETRAG;
     }
 
     /**
@@ -164,7 +159,7 @@ public class Geldbetrag
     {
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
-        return _gesamterCentbetrag > centbetrag;
+        return _GESAMTER_CENTBETRAG > centbetrag;
     }
 
     /**
@@ -177,7 +172,7 @@ public class Geldbetrag
     {
         assert istErlaubterGesamterCentbetrag(
                 centbetrag) : "Vorbedingung verletzt: istErlaubterGesamterCentbetrag(centbetrag)";
-        return _gesamterCentbetrag >= centbetrag;
+        return _GESAMTER_CENTBETRAG >= centbetrag;
     }
 
     /**
@@ -190,7 +185,7 @@ public class Geldbetrag
     }
 
     /**
-     * @param eingabe Ein Text in der Form "EE,CC". 
+     * @param eingabe Ein String in der Form "EE,CC". 
      * @return Ein Integer Wert der Form EECC.
      */
     private static Integer parseEingabe(String eingabe)
@@ -278,12 +273,12 @@ public class Geldbetrag
      */
     private String erstelleBetragString()
     {
-        String betragString = _gesamterCentbetrag / 100 + ","
-                + _gesamterCentbetrag % 100;
-        if (_gesamterCentbetrag % 100 < 10)
+        String betragString = _GESAMTER_CENTBETRAG / 100 + ","
+                + _GESAMTER_CENTBETRAG % 100;
+        if (_GESAMTER_CENTBETRAG % 100 < 10)
         {
             betragString = betragString.substring(0, betragString.length() - 1)
-                    + "0" + _gesamterCentbetrag % 100;
+                    + "0" + _GESAMTER_CENTBETRAG % 100;
         }
 
         return betragString;
@@ -294,11 +289,11 @@ public class Geldbetrag
      */
     private int bestimmeMaximalenErlaubtenFaktor()
     {
-        if (_gesamterCentbetrag == 0)
+        if (_GESAMTER_CENTBETRAG == 0)
         {
             return Integer.MAX_VALUE;
         }
-        return Integer.MAX_VALUE / _gesamterCentbetrag;
+        return Integer.MAX_VALUE / _GESAMTER_CENTBETRAG;
     }
 
     /**
@@ -307,6 +302,6 @@ public class Geldbetrag
      */
     public boolean istErlaubterFaktor(int faktor)
     {
-        return faktor >= 0 && faktor <= _maximalerErlaubterFaktor;
+        return faktor >= 0 && faktor <= _MAXIMALER_ERLAUBTER_FAKTOR;
     }
 }
