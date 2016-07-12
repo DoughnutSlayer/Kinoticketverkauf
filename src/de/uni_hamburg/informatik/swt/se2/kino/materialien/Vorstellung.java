@@ -171,7 +171,8 @@ public class Vorstellung
     }
 
     /**
-     * Gibt den Gesamtpreis für die angegebenen Plätze zurücke
+     * Gibt den Gesamtpreis für die angegebenen Plätze zurück.
+     * Gibt null zurück, wenn der Gesamtpreis Integer.MAX_VALUE übersteigen würde.
      * 
      * @param plaetze die Sitzplätze.
      * 
@@ -185,6 +186,11 @@ public class Vorstellung
         assert plaetze != null : "Vorbedingung verletzt: plaetze != null";
         assert hatPlaetze(
                 plaetze) : "Vorbedingung verletzt: hatPlaetze(plaetze)";
+
+        if (!_preis.istErlaubterFaktor(plaetze.size()))
+        {
+            return null;
+        }
 
         return _preis.mal(plaetze.size());
     }
