@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * Man kann Geldwerte entweder mit einem Integer bzw. int-Wert auswählen, sowie mit einem geeignet formatierten String.
  * 
  * @author TMNT
- * @version 05.07.2016
+ * @version 12.07.2016
  */
 public class Geldbetrag
 {
