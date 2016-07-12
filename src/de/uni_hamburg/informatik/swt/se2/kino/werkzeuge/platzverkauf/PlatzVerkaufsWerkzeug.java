@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import de.uni_hamburg.informatik.swt.se2.kino.fachwerte.Geldbetrag;
@@ -90,7 +91,7 @@ public class PlatzVerkaufsWerkzeug
                 @Override
                 public void auswahlGeaendert(PlatzSelectionEvent event)
                 {
-                    reagiereAufNeuePlatzAuswahl(event.getAusgewaehltePlaetze());
+                    reagiereAufNeuePlatzAuswahl(event);
                 }
             });
     }
@@ -101,8 +102,17 @@ public class PlatzVerkaufsWerkzeug
      * 
      * @param plaetze die jetzt ausgewählten Plätze.
      */
-    private void reagiereAufNeuePlatzAuswahl(Set<Platz> plaetze)
+    private void reagiereAufNeuePlatzAuswahl(PlatzSelectionEvent event)
     {
+        Set<Platz> plaetze = event.getAusgewaehltePlaetze();
+
+        if (sindPlaetzeZuTeuer(plaetze))
+        {
+            Platz platz = event.getGeaendertenPlatz();
+            zuHoherGesamtpreis(platz);
+            return;
+        }
+        
         _ui.getVerkaufenButton()
             .setEnabled(istVerkaufenMoeglich(plaetze));
         _ui.getStornierenButton()
@@ -204,5 +214,19 @@ public class PlatzVerkaufsWerkzeug
             .getAusgewaehltePlaetze();
         vorstellung.stornierePlaetze(plaetze);
         aktualisierePlatzplan();
+    }
+
+    private boolean sindPlaetzeZuTeuer(Set<Platz> plaetze)
+    {
+        return _vorstellung != null && _vorstellung.getPreisFuerPlaetze(plaetze) == null;
+    }
+
+    private void zuHoherGesamtpreis(Platz platz)
+    {
+        _ui.getPlatzplan()
+            .platzAbwaehlen(platz);
+        JOptionPane.showMessageDialog(getUIPanel().getTopLevelAncestor(),
+                "Der Gesamtpreis der ausgewählten Plätze ist zu hoch!",
+                "Fehler!", JOptionPane.ERROR_MESSAGE);
     }
 }

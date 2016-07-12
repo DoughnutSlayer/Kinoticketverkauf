@@ -42,6 +42,8 @@ public class GeldbetragTest
             .toString());
         assertEquals("3,70", Geldbetrag.select("3.7")
             .toString());
+        assertEquals("0,01", Geldbetrag.select("0,01")
+            .toString());
         assertEquals("0,00", Geldbetrag.select(".")
             .toString());
         assertEquals("0,00", Geldbetrag.select(" ")
@@ -138,6 +140,13 @@ public class GeldbetragTest
 
         assertFalse(_dreißigCentInt.groesserAls(_zehnEuroString));
         assertFalse(_dreißigCentInt.groesserAls(100));
+
+        
+        assertTrue(_zehnEuroInt.groesserGleich(_fünfEuroFünfundzwanzigString));
+        assertTrue(_zehnEuroInt.groesserGleich(1000));
+
+        assertFalse(_dreißigCentInt.groesserGleich(_zehnEuroString));
+        assertFalse(_dreißigCentInt.groesserGleich(100));
     }
 
     /**
@@ -148,7 +157,7 @@ public class GeldbetragTest
     {
         String wert1 = "10";
         String wert2 = "5,90";
-        String wert3 = "24,8";
+        String wert3 = "24.8";
         String wert4 = ",40";
         String wert5 = "133,";
         String wert6 = "12,50,10";

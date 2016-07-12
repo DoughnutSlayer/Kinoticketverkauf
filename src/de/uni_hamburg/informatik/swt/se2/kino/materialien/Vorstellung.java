@@ -42,6 +42,7 @@ public class Vorstellung
      * @require endzeit != null
      * @require datum != null
      * @require preis != null
+     * @require istPreisErlaubt(preis)
      * 
      * @ensure getKinosaal() == kinosaal
      * @ensure getFilm() == film
@@ -49,6 +50,7 @@ public class Vorstellung
      * @ensure getEndzeit() == endzeit
      * @ensure getDatum() == datum
      * @ensure getPreis() == preis
+     * @ensure istPreisErlaubt(preis)
      */
     public Vorstellung(Kinosaal kinosaal, Film film, Uhrzeit anfangszeit,
             Uhrzeit endzeit, Datum datum, Geldbetrag preis)
@@ -169,7 +171,8 @@ public class Vorstellung
     }
 
     /**
-     * Gibt den Gesamtpreis für die angegebenen Plätze zurücke
+     * Gibt den Gesamtpreis für die angegebenen Plätze zurück.
+     * Gibt null zurück, wenn der Gesamtpreis Integer.MAX_VALUE übersteigen würde.
      * 
      * @param plaetze die Sitzplätze.
      * 
@@ -183,6 +186,11 @@ public class Vorstellung
         assert plaetze != null : "Vorbedingung verletzt: plaetze != null";
         assert hatPlaetze(
                 plaetze) : "Vorbedingung verletzt: hatPlaetze(plaetze)";
+
+        if (!_preis.istErlaubterFaktor(plaetze.size()))
+        {
+            return null;
+        }
 
         return _preis.mal(plaetze.size());
     }
